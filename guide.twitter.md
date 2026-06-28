@@ -40,7 +40,7 @@ export const loaders = {
 Puedes apoyarte en la clase DataLoaderHelper.
 
 
-## Paso 4: Proteger las Mutaciones de Autenticación
+## Paso 4: Añadir autenticación
 
 Ahora necesitas que los usuarios puedan iniciar y cerrar sesión. Crea dos mutaciones:
 - **signIn**: permite que un usuario inicie sesión con sus credenciales
@@ -120,5 +120,94 @@ Modifica la query `tweets()` para que reciba un nuevo argumento `filters`, donde
 Parece que has creado un clon fantástico. Pero me acaba de llamar Elon, dice que sabe mas que todos nostros de software, asi que nos ha exigido que notifiquemos al usuario en tiempo real cuando un nuevo tweet es publicado.
 
 Crea una subscription `tweets: Tweet!` sin argumentos que emita un evento cada vez que se publique un tweet nuevo. Así el frontend podrá mostrar los tweets nuevos al instante sin necesidad de refrescar la página.
+
+## Paso 14: Generar Datos por Defecto con Drizzle Seed
+
+Insertar datos manualmente en la base de datos es tedioso y poco escalable. Utiliza el paquete `drizzle-seed` para generar datos de prueba de forma determinista y reproducible.
+
+
+1. **Crea un script de seed**: crea un archivo (por ejemplo `src/seed.ts`) que importe tu esquema de drizzle y utilice la función `seed()` para poblar las tablas. Puedes usar `reset()` para limpiar la base de datos antes de sembrar datos nuevos:
+
+```ts
+import { seed, reset } from "drizzle-seed"
+import * as schema from "./schema"
+
+async function main() {
+  await reset(db, schema)
+  await seed(db, schema)
+}
+```
+
+2. **Refina los datos generados**: utiliza `.refine()` para personalizar la generación por tabla y columna. Por ejemplo, genera contenido realista para los tweets, nombres para los usuarios, y relaciones coherentes entre tablas usando `with`:
+
+```ts
+await seed(db, schema).refine((f) => ({
+  users: {
+    count: 10,
+    columns: {
+      name: f.fullName(),
+    },
+    with: {
+      tweets: 5,
+    },
+  },
+  tweets: {
+    columns: {
+      content: f.loremIpsum(),
+    },
+  },
+}))
+```
+
+3. **Añade un script en `package.json`** para ejecutar el seed fácilmente, por ejemplo `"db:seed": "tsx src/seed.ts"`.
+
+Recuerda que `drizzle-seed` es determinista: usando el mismo número de seed, siempre se generarán los mismos datos. Puedes cambiar el seed en las opciones para obtener un conjunto diferente: `seed(db, schema, { seed: 12345 })`.
+
+
+## Paso 15: Testing con Yoga y Vitest
+
+Es hora de asegurarte de que tu API funciona correctamente y no se rompe con futuros cambios. Implementa tests automatizados usando **Vitest** como framework de testing y aprovechando la capacidad de **GraphQL Yoga** para simular peticiones HTTP sin levantar un servidor real.
+
+1. **Configura Vitest**: crea un archivo `vitest.config.ts` o añade la configuración en tu `vite.config.ts`. Añade un script `"test": "vitest"` en `package.json`.
+
+2. **Crea el executor de testing**: utiliza `buildHTTPExecutor` junto con `yoga.fetch` para simular peticiones sin hacer llamadas HTTP reales:
+
+```ts
+import { buildHTTPExecutor } from "@graphql-tools/executor-http"
+import { parse } from "graphql"
+import { yoga } from "../app"
+
+const executor = buildHTTPExecutor({
+  fetch: yoga.fetch,
+  endpoint: "http://yoga/graphql",
+})
+```
+
+3. **Escribe tests para tus queries y mutations**:
+
+```ts
+import { describe, it, expect } from "vitest"
+
+describe("Tweets", () => {
+  it("debería obtener la lista de tweets", async () => {
+    const result = await executor({
+      document: parse(/* GraphQL */ `
+        query {
+          tweets {
+            content
+            likes
+          }
+        }
+      `),
+    })
+
+    expect(result.data?.tweets).toBeDefined()
+  })
+})
+```
+
+4. **Testa las subscriptions** si implementaste el paso 13, verificando que el executor devuelve un `AsyncIterable` al suscribirse.
+
+5. **Testa los flujos de autenticación**: simula cookies o headers en el executor para verificar que las queries protegidas con `@auth` rechazan peticiones sin sesión y aceptan las autenticadas.
 
 
