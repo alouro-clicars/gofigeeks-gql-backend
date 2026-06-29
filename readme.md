@@ -25,7 +25,7 @@
 - **Supabase** cuenta con proyecto configurado (para almacenamiento de archivos y base de datos)
 
 
-## 🚀 Inicio rápido
+## 🚀 Preparación
 
 ### 1. Clonar y instalar
 
@@ -37,7 +37,7 @@ npm install
 
 ### 2. Configurar variables de entorno
 
-Abre el archivo `.env` y obten las variables de entorno de tu proyecto de supabase
+Abre el archivo `.env` y obten las variables de entorno de tu proyecto de supabase.
 
 ### 3. Crear y migrar la base de datos
 
@@ -63,6 +63,16 @@ npm run dev
 Si estas usando vscode, se recomienda usar `F5` para iniciar el debugger, en lugar de `npm run dev`.
 
 El servidor estará disponible en `http://localhost:4000/graphql`. En este enlace dispondras de un playground de graphql, aunque también puedes usar Postman si lo prefieres.
+
+
+### 5. Instala una Herramienta de Red
+
+Uno de los mayores puntos de fricción con GraphQL es el seguimiento de sus peticiones. Ya que la tradicional pestaña de Red disponible en las Herramientas de Desarrollo de Chrome no están planteadas para trabajar con este tipo de apis.
+
+Para trabajar con fluidez, necesitarás instalar alguna extensión que te permita seguir mejor lo que está pasando. Instala alguna de las siguientes opciones:
+
+- [Recomendada] [GraphQL Network](https://chromewebstore.google.com/detail/graphql-network/kioemmijacihfbmkedmodekdhggddgck)
+- [GraphQL Network Inspector](https://chromewebstore.google.com/detail/graphql-network-inspector/ndlbedplllcgconngcnfmkadhokfaaln)
 
 
 ## 🔧 Scripts disponibles
@@ -137,7 +147,7 @@ Para usar sqlite, debes cambiar el adaptador de drizzle por el de [sqlite](https
 
 ## Empieza el workshop
 
-Echale un vistazo al codigo, no te pares mucho en las partes mas complejas. Pero si entiende los archivos principales: index, resolvers, schema.
+Echale un vistazo al código, no te pares mucho en las partes mas complejas. Pero si entiende los archivos principales: index, resolvers, schema.
 
 Comprueba que la autenticación funciona y te está devolviendo un cookie. Comprueba que puedes ejecutar una migracion de base de datos sin problemas.
 

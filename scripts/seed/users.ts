@@ -7,6 +7,13 @@ export const users = [
 		biography: 'my bio',
 	},
 	{
+		email: 'user@example.com',
+		password: 'user',
+		name: 'Regular User',
+		role: 'user',
+		biography: 'my bio',
+	},
+	{
 		email: 'midu@example.com',
 		password: 'midudev',
 		name: 'Miguel Ángel Durán',
