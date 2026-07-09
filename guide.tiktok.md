@@ -38,8 +38,6 @@ export const loaders = {
 }
 ```
 
-Puedes apoyarte en la clase DataLoaderHelper.
-
 
 ## Paso 4: Añadir autenticación
 
