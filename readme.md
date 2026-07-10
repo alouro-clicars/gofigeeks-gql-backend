@@ -105,10 +105,6 @@ No tienes por que entender todo, simplemente te dejo esta información para que 
 ```
 src/
 ├── app/
-│   ├── container/                 # Configuración de dependencias
-│   │   ├── application/           # Servicios de aplicación
-│   │   ├── infrastructure/        # Clientes e implementaciones
-│   │   └── persistence/           # Clientes de DB
 │   ├── graphql/
 │   │   ├── resolvers/             # Resolvers de Query/Mutation/Subscription
 │   │   ├── loaders/               # DataLoaders para batch loading
