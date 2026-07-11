@@ -61,27 +61,7 @@ Field resolvers for relations are not written by hand in `resolvers.ts`. Instead
 `DataLoaderHelper.load` / `.loadMany` and `CountLoaderHelper.loadCount` are generic helpers meant to back individual loader functions (one-to-one, one-to-many, and count-style loads respectively) — they depend on the not-yet-built `Criteria`/`Filters`/`Operator` DDD primitives under `#/shared/domain/criteria/*`.
 
 ### Repositories
-Each bounded context that owns a domain table has a repository class (e.g. `src/contexts/user/user.repository.ts`, `src/contexts/tweet/tweet.repository.ts`) that encapsulates drizzle queries. Repositories:
-- Are static classes with methods like `all()`, `searchById()`, `searchByIds()`, etc.
-- Keep query logic out of resolvers and loaders — a resolver calls `TweetRepository.all()` instead of raw drizzle, a loader calls `UserRepository.searchByIds(ids)` instead of inline `inArray()`.
-- Make it easy to refactor queries (change joins, add filters) in one place without hunting through resolvers.
-
-Example:
-```ts
-// src/contexts/tweet/tweet.repository.ts
-export class TweetRepository {
-	static async all() { /* select all tweets */ }
-	static async searchById(id) { /* select one tweet */ }
-}
-
-// src/contexts/user/user.repository.ts
-export class UserRepository {
-	static async searchByIds(ids) { /* select multiple users */ }
-	static async searchById(id) { /* select one user */ }
-}
-```
-
-Resolvers and loaders import and call these methods: `TweetRepository.all()`, `UserRepository.searchByIds(ids)`, etc.
+Each bounded context that owns a domain table has a repository class that encapsulates drizzle queries. Repositories are static classes with methods like `all()`, `searchById()`, `searchByIds()`, etc. They keep query logic out of resolvers and loaders, making it easy to refactor queries in one place. Resolvers and loaders call repository methods instead of using raw drizzle.
 
 ### Auth
 - Better-Auth (`src/contexts/shared/auth.ts`) owns the users/sessions/accounts tables and email+password auth, plus the `admin()` plugin for role management (`ADMIN`/`USER`, see `src/contexts/role/role.gql`).

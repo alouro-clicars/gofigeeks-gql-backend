@@ -9,5 +9,5 @@ type Tweet {
 }
 
 extend type Query {
-    tweets: [Tweet!]!
+    tweets: [Tweet!]! @auth
 }
