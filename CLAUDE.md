@@ -60,6 +60,29 @@ Field resolvers for relations are not written by hand in `resolvers.ts`. Instead
 
 `DataLoaderHelper.load` / `.loadMany` and `CountLoaderHelper.loadCount` are generic helpers meant to back individual loader functions (one-to-one, one-to-many, and count-style loads respectively) — they depend on the not-yet-built `Criteria`/`Filters`/`Operator` DDD primitives under `#/shared/domain/criteria/*`.
 
+### Repositories
+Each bounded context that owns a domain table has a repository class (e.g. `src/contexts/user/user.repository.ts`, `src/contexts/tweet/tweet.repository.ts`) that encapsulates drizzle queries. Repositories:
+- Are static classes with methods like `all()`, `searchById()`, `searchByIds()`, etc.
+- Keep query logic out of resolvers and loaders — a resolver calls `TweetRepository.all()` instead of raw drizzle, a loader calls `UserRepository.searchByIds(ids)` instead of inline `inArray()`.
+- Make it easy to refactor queries (change joins, add filters) in one place without hunting through resolvers.
+
+Example:
+```ts
+// src/contexts/tweet/tweet.repository.ts
+export class TweetRepository {
+	static async all() { /* select all tweets */ }
+	static async searchById(id) { /* select one tweet */ }
+}
+
+// src/contexts/user/user.repository.ts
+export class UserRepository {
+	static async searchByIds(ids) { /* select multiple users */ }
+	static async searchById(id) { /* select one user */ }
+}
+```
+
+Resolvers and loaders import and call these methods: `TweetRepository.all()`, `UserRepository.searchByIds(ids)`, etc.
+
 ### Auth
 - Better-Auth (`src/contexts/shared/auth.ts`) owns the users/sessions/accounts tables and email+password auth, plus the `admin()` plugin for role management (`ADMIN`/`USER`, see `src/contexts/role/role.gql`).
 - The `@auth(requires: [Role!])` directive (`src/app/graphql/directives/auth.gql` + `directives/auth.ts`) is applied via `mapSchema` in `graphql/schema.ts`. Its resolver wrapper is currently a stub (`// TODO`) — enforcing the session/role check there, and exposing the authenticated user through the Yoga request context (rather than re-parsing the session cookie in every resolver) is one of the core workshop exercises.
@@ -67,6 +90,9 @@ Field resolvers for relations are not written by hand in `resolvers.ts`. Instead
 
 ### Mutations/Subscriptions currently disabled
 `src/app/graphql/resolvers/mutations/mutation.gql.disabled` and `.../subscriptions/subscription.gql.disabled` are placeholders excluded from the `**/*.gql` glob by their extension. Rename to `.gql` (and fill in the real type defs + resolvers) when implementing mutations/subscriptions rather than creating new files elsewhere.
+
+### Database queries and logging
+`src/contexts/shared/drizzle-client.ts` is the single exported instance of the drizzle ORM client. It's configured with a custom logger that prints queries and parameters to stdout. When running `npm run dev`, all executed SQL queries appear in the dev server console, useful for debugging N+1 queries and verifying DataLoader batching behavior.
 
 ### Environment
 `src/app/env.ts` loads `.env` via Vite's `loadEnv` and must be imported first (side-effect only) before anything reads `process.env` — both `src/app/index.ts` and `drizzle.config.ts` do this. Required vars: `DATABASE_URL` (Postgres), `SUPABASE_URL`, `SUPABASE_KEY`, `SUPABASE_BUCKET`.
