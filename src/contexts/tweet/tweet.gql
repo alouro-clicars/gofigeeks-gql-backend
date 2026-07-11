@@ -5,6 +5,7 @@ type Tweet {
     content: String!
     likes: Int!
     createdAt: DateTimeISO!
+    author: User!
 }
 
 extend type Query {

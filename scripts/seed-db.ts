@@ -14,7 +14,7 @@ await reset(drizzleClient, { ...authSchema, ...tweetSchema })
 
 console.log('Seeding initial users...')
 
-await Promise.all(
+const createdUsers = await Promise.all(
 	users.map((user) =>
 		auth.api.createUser({
 			body: {
@@ -28,9 +28,11 @@ await Promise.all(
 	),
 )
 
+const authorIds = createdUsers.map((result) => result.user.id)
+
 console.log('Seeding initial tweets...')
 
-await drizzleClient.insert(tweetSchema.tweets).values(tweets)
+await drizzleClient.insert(tweetSchema.tweets).values(tweets(authorIds))
 
 console.log('Seed completed successfully!')
 process.exit(0)
