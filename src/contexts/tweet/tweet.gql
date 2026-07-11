@@ -11,3 +11,7 @@ type Tweet {
 extend type Query {
     tweets: [Tweet!]! @auth
 }
+
+extend type Mutation {
+	createTweet(content: String!): Tweet! @auth
+}

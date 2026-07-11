@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { resolvers as Scalars } from 'graphql-scalars'
 import { GraphQLError } from 'graphql'
 import { auth } from '#/shared/auth'
@@ -43,6 +44,15 @@ export const resolvers = DataLoaders.appendResolvers({
 
 			return true
 		},
+
+		createTweet: async (_: any, { content }: any, context: any) =>
+			TweetRepository.create({
+				id: randomUUID(),
+				content,
+				likes: 0,
+				createdAt: new Date(),
+				authorId: context.user.id,
+			}),
 	},
 	...Scalars,
 })

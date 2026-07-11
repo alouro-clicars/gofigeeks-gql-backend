@@ -29,4 +29,36 @@ export class TweetRepository {
 			.limit(1)
 			.then((rows) => rows[0] || null)
 	}
+
+	static async create({
+		id,
+		content,
+		likes,
+		createdAt,
+		authorId,
+	}: {
+		id: string
+		content: string
+		likes: number
+		createdAt: Date
+		authorId: string
+	}) {
+		return drizzleClient
+			.insert(tweets)
+			.values({
+				id,
+				content,
+				likes,
+				createdAt,
+				authorId,
+			})
+			.returning({
+				id: tweets.id,
+				content: tweets.content,
+				likes: tweets.likes,
+				createdAt: tweets.createdAt,
+				authorId: tweets.authorId,
+			})
+			.then((rows) => rows[0])
+	}
 }
