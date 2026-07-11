@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto'
 import { resolvers as Scalars } from 'graphql-scalars'
 import { GraphQLError } from 'graphql'
 import { auth } from '#/shared/auth'
+import { storeFile } from '#/shared/storage'
 import { TweetRepository } from '#/tweet/tweet.repository'
 import { DataLoaders } from './shared/data-loaders'
 
@@ -23,12 +24,9 @@ export const resolvers = DataLoaders.appendResolvers({
 				return result.response.user
 			} catch (error: any) {
 				if (error.message?.includes('Invalid email or password')) {
-					throw new GraphQLError(
-						'Email o contraseña inválidos',
-						{
-							extensions: { code: 'INVALID_CREDENTIALS' },
-						},
-					)
+					throw new GraphQLError('Email o contraseña inválidos', {
+						extensions: { code: 'INVALID_CREDENTIALS' },
+					})
 				}
 				throw error
 			}
@@ -45,11 +43,14 @@ export const resolvers = DataLoaders.appendResolvers({
 			return true
 		},
 
-		createTweet: async (_: any, { content }: any, context: any) =>
+		uploadFile: async (_: any, { file }: any) => storeFile(file),
+
+		createTweet: async (_: any, { content, media }: any, context: any) =>
 			TweetRepository.create({
 				id: randomUUID(),
 				content,
 				likes: 0,
+				media,
 				createdAt: new Date(),
 				authorId: context.user.id,
 			}),

@@ -5,6 +5,7 @@ export const tweets = pgTable('tweets', {
 	id: uuid('id').primaryKey(),
 	content: text('content').notNull(),
 	likes: integer('likes').notNull(),
+	media: text('media').array().notNull().default([]),
 	createdAt: timestamp('created_at').notNull(),
 	authorId: text('author_id')
 		.notNull()

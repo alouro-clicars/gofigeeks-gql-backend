@@ -9,6 +9,7 @@ export class TweetRepository {
 				id: tweets.id,
 				content: tweets.content,
 				likes: tweets.likes,
+				media: tweets.media,
 				createdAt: tweets.createdAt,
 				authorId: tweets.authorId,
 			})
@@ -21,6 +22,7 @@ export class TweetRepository {
 				id: tweets.id,
 				content: tweets.content,
 				likes: tweets.likes,
+				media: tweets.media,
 				createdAt: tweets.createdAt,
 				authorId: tweets.authorId,
 			})
@@ -34,12 +36,14 @@ export class TweetRepository {
 		id,
 		content,
 		likes,
+		media,
 		createdAt,
 		authorId,
 	}: {
 		id: string
 		content: string
 		likes: number
+		media: string[]
 		createdAt: Date
 		authorId: string
 	}) {
@@ -49,6 +53,7 @@ export class TweetRepository {
 				id,
 				content,
 				likes,
+				media,
 				createdAt,
 				authorId,
 			})
@@ -56,6 +61,7 @@ export class TweetRepository {
 				id: tweets.id,
 				content: tweets.content,
 				likes: tweets.likes,
+				media: tweets.media,
 				createdAt: tweets.createdAt,
 				authorId: tweets.authorId,
 			})

@@ -1,4 +1,7 @@
+scalar Upload
+
 type Mutation {
 	signIn(email: String!, password: String!): User!
 	signOut: Boolean!
+	uploadFile(file: Upload!): String! @auth
 }

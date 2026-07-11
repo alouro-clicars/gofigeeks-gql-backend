@@ -1,0 +1,1 @@
+ALTER TABLE "tweets" ADD COLUMN "media" text[] DEFAULT '{}' NOT NULL;

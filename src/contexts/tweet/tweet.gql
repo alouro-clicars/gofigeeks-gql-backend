@@ -1,17 +1,18 @@
 # src/contexts/tweet/tweet.schema.ts
 
 type Tweet {
-    id: ID!
-    content: String!
-    likes: Int!
-    createdAt: DateTimeISO!
-    author: User!
+	id: ID!
+	content: String!
+	likes: Int!
+	media: [String!]!
+	createdAt: DateTimeISO!
+	author: User!
 }
 
 extend type Query {
-    tweets: [Tweet!]! @auth
+	tweets: [Tweet!]! @auth
 }
 
 extend type Mutation {
-	createTweet(content: String!): Tweet! @auth
+	createTweet(content: String!, media: [String!]! = []): Tweet! @auth
 }
